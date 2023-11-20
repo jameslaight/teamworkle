@@ -1,7 +1,5 @@
 package jamlai.core;
 
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -59,20 +57,18 @@ public class Game {
 		return guess.equals(solution); //returns whether solved
 	}
 
-	public MessageEmbed getEmbed() {
-		EmbedBuilder builder = new EmbedBuilder();
+	public String getBoardAsString() {
+		StringBuilder builder = new StringBuilder();
 
-		StringBuilder strBuilder = new StringBuilder();
 		boolean first = true;
 		for (String line : board) {
 			if (first) first = false;
-			else strBuilder.append("\n");
+			else builder.append("\n");
 
-			strBuilder.append(line);
+			builder.append(line);
 		}
-		builder.addField("Board", strBuilder.toString(), false);
 
-		return builder.build();
+		return builder.toString();
 	}
 
 }
