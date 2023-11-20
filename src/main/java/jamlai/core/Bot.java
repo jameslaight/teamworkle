@@ -11,7 +11,11 @@ public class Bot {
 	public void build(String token) {
 		JDABuilder builder = JDABuilder.createDefault(token);
 		builder.setActivity(Activity.playing("Teamwordle"));
-		jda = builder.build();
+		try {
+			jda = builder.build().awaitReady();
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }
