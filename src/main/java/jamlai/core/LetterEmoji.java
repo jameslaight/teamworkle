@@ -10,7 +10,7 @@ import java.util.Map;
 
 public abstract class LetterEmoji {
 
-	private static final Map<Character, String> solvedMap = new HashMap<>(), misplacedMap = new HashMap<>();
+	private static final Map<Type, Map<Character, String>> emojiMap = new HashMap<>();
 	private static String blankEmoji;
 
 	private static boolean loaded = false;
@@ -21,9 +21,14 @@ public abstract class LetterEmoji {
 		try (BufferedReader reader = new BufferedReader(new FileReader("emojis.txt"))) {
 			blankEmoji = reader.readLine();
 
-			for (char c = 'a'; c <= 'z'; c++) {
-				solvedMap.put(c, reader.readLine());
-				misplacedMap.put(c, reader.readLine());
+			for (Type type : Type.values()) {
+				Map<Character, String> typeMap = new HashMap<>();
+
+				for (char c = 'a'; c <= 'z'; c++) {
+					typeMap.put(c, reader.readLine());
+				}
+
+				emojiMap.put(type, typeMap);
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -37,10 +42,7 @@ public abstract class LetterEmoji {
 
 		if (c < 'a' || c > 'z') throw new IllegalArgumentException("c must be between 'a' and 'z' inclusive, got '" + c + "'");
 
-		return switch (type) {
-			case SOLVED -> solvedMap.get(c);
-			case MISPLACED -> misplacedMap.get(c);
-		};
+		return emojiMap.get(type).get(c);
 	}
 
 	public static String getBlankEmoji() {
@@ -50,7 +52,7 @@ public abstract class LetterEmoji {
 	}
 
 	public enum Type {
-		SOLVED, MISPLACED
+		SOLVED, MISPLACED, INCORRECT
 	}
 
 
