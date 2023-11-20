@@ -1,9 +1,17 @@
 package jamlai.core;
 
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Activity;
+
 public class Bot {
 
-	public static void main(String[] args) {
+	private JDA jda;
 
+	public void build(String token) {
+		JDABuilder builder = JDABuilder.createDefault(token);
+		builder.setActivity(Activity.playing("Teamwordle"));
+		jda = builder.build();
 	}
 
 }
