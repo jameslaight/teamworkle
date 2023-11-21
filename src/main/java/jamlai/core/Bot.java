@@ -95,7 +95,7 @@ public class Bot extends ListenerAdapter {
 					builder.append(switch (remaining) {
 						case 0 -> "no guesses remaining!";
 						case 1 -> "``1`` guess remaining!";
-						default -> "``" + remaining + "`` remaining.";
+						default -> "``" + remaining + "`` guesses remaining.";
 					});
 				} else {
 					builder.append(":skull_crossbones: Defeat.");
