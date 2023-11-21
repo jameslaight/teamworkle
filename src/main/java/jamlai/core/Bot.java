@@ -38,6 +38,8 @@ public class Bot extends ListenerAdapter {
 				Commands.slash("guess", "Guess a word in the daily teamworkle.")
 						.setGuildOnly(true)
 						.addOption(OptionType.STRING, "word", "word to guess", true, false),
+				Commands.slash("board", "View the board state")
+						.setGuildOnly(true),
 				Commands.slash("unused", "See all unused letters.")
 						.setGuildOnly(true)
 		).queue();
@@ -73,8 +75,10 @@ public class Bot extends ListenerAdapter {
 
 			game.guess(word);
 			event.reply(game.getBoardAsString()).queue();
+		} else if (event.getName().equals("board")) {
+			event.reply(game.getBoardAsString()).setEphemeral(true).queue();
 		} else if (event.getName().equals("unused")) {
-			event.reply(game.getUnusedAsString()).queue();
+			event.reply(game.getUnusedAsString()).setEphemeral(true).queue();
 		}
 	}
 
