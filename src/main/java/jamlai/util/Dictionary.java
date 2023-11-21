@@ -28,17 +28,25 @@ public abstract class Dictionary {
 	public static void load() {
 		if (loaded) throw new IllegalStateException("Words already loaded");
 
-		validWords = loadSet(new File("txt/valid.txt")).collect(Collectors.toSet());
-		solutionWords = loadSet(new File("txt/solutions.txt")).toList();
+		validWords = loadSet(new File("txt/valid.txt"));
+		solutionWords = loadList(new File("txt/solutions.txt"));
 
 		validWords.addAll(solutionWords); //ensure all solution words are also valid words
 
 		loaded = true;
 	}
 
-	private static Stream<String> loadSet(File file) {
+	private static Set<String> loadSet(File file) {
 		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-			return reader.lines();
+			return reader.lines().collect(Collectors.toSet());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private static List<String> loadList(File file) {
+		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+			return reader.lines().toList();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
