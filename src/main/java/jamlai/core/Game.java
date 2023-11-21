@@ -10,7 +10,7 @@ import java.util.Map;
 public class Game {
 
 	private final @NotNull String solution;
-	private final Map<Character, Integer> characterCounts = new HashMap<>();
+	private final @NotNull Map<Character, Integer> characterCounts = new HashMap<>();
 
 	private final int maxGuesses;
 	private final boolean[] usedCharacters;
@@ -33,7 +33,7 @@ public class Game {
 		Arrays.fill(board, line); //fill board with blank lines to begin
 	}
 
-	public boolean guess(String guess) {
+	public boolean guess(@NotNull String guess) {
 		StringBuilder builder = new StringBuilder(); //builder for the line on the board
 
 		Map<Character, Integer> counts = new HashMap<>(characterCounts);
