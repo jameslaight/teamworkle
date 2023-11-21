@@ -38,7 +38,9 @@ public class Bot extends ListenerAdapter {
 		jda.updateCommands().addCommands(
 				Commands.slash("guess", "Guess a word in the daily teamworkle.")
 						.setGuildOnly(true)
-						.addOption(OptionType.STRING, "word", "word to guess", true, false)
+						.addOption(OptionType.STRING, "word", "word to guess", true, false),
+				Commands.slash("unused", "See all unused letters.")
+						.setGuildOnly(true)
 		).queue();
 	}
 
@@ -54,6 +56,8 @@ public class Bot extends ListenerAdapter {
 		if (event.getName().equals("guess")) {
 			game.guess(event.getOption("word", OptionMapping::getAsString));
 			event.reply(game.getBoardAsString()).queue();
+		} else if (event.getName().equals("unused")) {
+			event.reply(game.getUnusedAsString()).queue();
 		}
 	}
 

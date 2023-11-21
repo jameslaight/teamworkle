@@ -13,6 +13,7 @@ public class Game {
 	private final Map<Character, Integer> characterCounts = new HashMap<>();
 
 	private final int maxGuesses;
+	private final boolean[] usedCharacters;
 	private int guesses = 0;
 
 	private final String[] board;
@@ -20,6 +21,8 @@ public class Game {
 	public Game(@NotNull String solution, int maxGuesses) {
 		this.solution = solution;
 		this.maxGuesses = maxGuesses;
+
+		usedCharacters = new boolean[26]; //initialised as false
 
 		for (char c : solution.toCharArray()) { //count # of characters in solution
 			characterCounts.put(c, characterCounts.getOrDefault(c, 0) + 1);
@@ -37,6 +40,8 @@ public class Game {
 
 		for (int i = 0; i < solution.length(); i++) {
 			char c = guess.charAt(i);
+
+			usedCharacters[c - 'a'] = true; //set character to used
 
 			LetterEmoji.Type letterType = LetterEmoji.Type.INCORRECT; //assume letter is incorrect
 			int count = counts.getOrDefault(c, 0);
@@ -67,6 +72,19 @@ public class Game {
 			else builder.append("\n");
 
 			builder.append(line);
+		}
+
+		return builder.toString();
+	}
+
+	public String getUnusedAsString() {
+		StringBuilder builder = new StringBuilder();
+
+		for (int i = 0; i < usedCharacters.length; i++) {
+			if (usedCharacters[i]) builder.append(LetterEmoji.getBlankEmoji());
+			else builder.append(LetterEmoji.getEmoji((char) ('a' + i), LetterEmoji.Type.INCORRECT));
+
+			if (i == 12) builder.append("\n");
 		}
 
 		return builder.toString();
