@@ -115,7 +115,10 @@ public class Bot extends ListenerAdapter {
 			List<String> words = Dictionary.getSolutionWords().stream().filter(s -> s.length() == wordLength).toList();
 			String solution = words.get(random.nextInt(words.size()));
 
-			return new Game(solution, guesses);
+			Game game = new Game(solution, guesses);
+			games.put(guild, game);
+
+			return game;
 		}
 	}
 
