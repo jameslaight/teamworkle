@@ -4,7 +4,9 @@ import jamlai.util.Dictionary;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -45,6 +47,14 @@ public class Bot extends ListenerAdapter {
 
 		Random random = new Random();
 		game = new Game(words.get(random.nextInt(words.size())), 6);
+	}
+
+	@Override
+	public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
+		if (event.getName().equals("guess")) {
+			game.guess(event.getOption("word", OptionMapping::getAsString));
+			event.reply(game.getBoardAsString()).queue();
+		}
 	}
 
 }
