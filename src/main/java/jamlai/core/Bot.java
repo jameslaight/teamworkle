@@ -12,7 +12,6 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.EventListener;
 import java.util.List;
 import java.util.Random;
 
@@ -54,7 +53,25 @@ public class Bot extends ListenerAdapter {
 	@Override
 	public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
 		if (event.getName().equals("guess")) {
-			game.guess(event.getOption("word", OptionMapping::getAsString));
+			String word = event.getOption("word", OptionMapping::getAsString);
+
+			if (word == null) {
+				event.reply("No guess given.").queue();
+				return;
+			}
+
+			int wordLen = word.length(), solutionLen = game.getSolution().length();
+			if (wordLen != solutionLen) {
+				event.reply("Guess must be the same length as the solution (guess length ``" + wordLen + "``, solution length ``" + solutionLen + "``).").queue();
+				return;
+			}
+
+			if (!Dictionary.isValidWord(word)) {
+				event.reply("Guess must be a valid word.").queue();
+				return;
+			}
+
+			game.guess(word);
 			event.reply(game.getBoardAsString()).queue();
 		} else if (event.getName().equals("unused")) {
 			event.reply(game.getUnusedAsString()).queue();
