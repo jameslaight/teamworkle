@@ -12,6 +12,7 @@ public class Main {
 		if (args.length == 1) {
 			Bot bot = new Bot();
 			bot.build(args[0]);
+			bot.start();
 		} else {
 			System.out.println("Run the program with a bot token as the singular argument");
 		}
