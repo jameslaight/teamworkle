@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public abstract class Dictionary {
 
@@ -17,7 +16,7 @@ public abstract class Dictionary {
 
 	private static boolean loaded = false;
 
-	public boolean isValidWord(String word) {
+	public static boolean isValidWord(String word) {
 		return validWords.contains(word);
 	}
 
