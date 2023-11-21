@@ -15,6 +15,7 @@ public class Game {
 	private final int maxGuesses;
 	private final boolean[] usedCharacters;
 	private int guesses = 0;
+	private boolean complete = false;
 
 	private final String[] board;
 
@@ -33,7 +34,7 @@ public class Game {
 		Arrays.fill(board, line); //fill board with blank lines to begin
 	}
 
-	public boolean guess(@NotNull String guess) {
+	public void guess(@NotNull String guess) {
 		StringBuilder builder = new StringBuilder(); //builder for the line on the board
 
 		Map<Character, Integer> counts = new HashMap<>(characterCounts);
@@ -58,14 +59,28 @@ public class Game {
 			builder.append(LetterEmoji.getEmoji(c, letterType)); //get the appropriate emoji and append to line
 		}
 
-		board[guesses++] = builder.toString();
+		if (guess.equals(solution)) { //victory
+			complete = true;
+			builder.append(":tada:");
+		} else if (getGuessesLeft() <= 0) { //defeat
+			complete = true;
+			builder.append(":skull_crossbones:");
+		}
 
-		return guess.equals(solution); //returns whether solved
+		board[guesses++] = builder.toString();
 	}
 
 	@NotNull
 	public String getSolution() {
 		return solution;
+	}
+
+	public int getGuessesLeft() {
+		return maxGuesses - guesses;
+	}
+
+	public boolean isComplete() {
+		return complete;
 	}
 
 	public String getBoardAsString() {

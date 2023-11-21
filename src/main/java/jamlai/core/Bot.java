@@ -55,6 +55,11 @@ public class Bot extends ListenerAdapter {
 	@Override
 	public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
 		if (event.getName().equals("guess")) {
+			if (game.isComplete()) { //fail if the game has been completed
+				System.out.println("Today's game is over. View the board state with ``/board``.");
+				return;
+			}
+
 			String word = event.getOption("word", OptionMapping::getAsString);
 
 			if (word == null) {
