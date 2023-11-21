@@ -4,6 +4,7 @@ import jamlai.util.Dictionary;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -12,14 +13,17 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class Bot extends ListenerAdapter {
 
 	private JDA jda;
+	private Random random = new Random();
 
-	private Game game;
+	private Map<Guild, Game> games = new HashMap<>(); //games being played in each guild
 
 	public void build(@NotNull String token) {
 		JDABuilder builder = JDABuilder.createDefault(token);
@@ -45,19 +49,13 @@ public class Bot extends ListenerAdapter {
 		).queue();
 	}
 
-	public void start() {
-		final int wordLength = 5, guesses = 6;
-		List<String> words = Dictionary.getSolutionWords().stream().filter(s -> s.length() == wordLength).toList();
-
-		Random random = new Random();
-		game = new Game(words.get(random.nextInt(words.size())), guesses);
-	}
-
 	@Override
 	public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
+		Game game = getGameForGuild(event.getGuild());
+
 		if (event.getName().equals("guess")) {
 			if (game.isComplete()) { //fail if the game has been completed
-				System.out.println("Today's game is over. View the board state with ``/board``.");
+				event.reply("Today's game is over. View the board state with ``/board``.").queue();
 				return;
 			}
 
@@ -106,6 +104,18 @@ public class Bot extends ListenerAdapter {
 			event.reply(game.getBoardAsString()).setEphemeral(true).queue();
 		} else if (event.getName().equals("unused")) {
 			event.reply(game.getUnusedAsString()).setEphemeral(true).queue();
+		}
+	}
+
+	private Game getGameForGuild(Guild guild) {
+		if (games.containsKey(guild)) {
+			return games.get(guild);
+		} else {
+			final int wordLength = 5, guesses = 6;
+			List<String> words = Dictionary.getSolutionWords().stream().filter(s -> s.length() == wordLength).toList();
+			String solution = words.get(random.nextInt(words.size()));
+
+			return new Game(solution, guesses);
 		}
 	}
 
