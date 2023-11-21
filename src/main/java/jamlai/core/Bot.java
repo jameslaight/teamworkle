@@ -85,7 +85,7 @@ public class Bot extends ListenerAdapter {
 
 				if (game.getEndState() == Game.EndState.VICTORY) {
 					int remaining = game.getGuessesLeft();
-					builder.append(":tada: Victory with");
+					builder.append(":tada: Victory with ");
 
 					builder.append(switch (remaining) {
 						case 0 -> "no guesses remaining!";
