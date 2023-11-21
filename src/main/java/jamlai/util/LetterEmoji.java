@@ -1,4 +1,4 @@
-package jamlai.core;
+package jamlai.util;
 
 import org.jetbrains.annotations.NotNull;
 

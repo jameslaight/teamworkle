@@ -1,5 +1,6 @@
 package jamlai.core;
 
+import jamlai.util.LetterEmoji;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
