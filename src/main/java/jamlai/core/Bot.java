@@ -46,10 +46,11 @@ public class Bot extends ListenerAdapter {
 	}
 
 	public void start() {
-		List<String> words = Dictionary.getSolutionWords().stream().filter(s -> s.length() == 5).toList();
+		final int wordLength = 5, guesses = 6;
+		List<String> words = Dictionary.getSolutionWords().stream().filter(s -> s.length() == wordLength).toList();
 
 		Random random = new Random();
-		game = new Game(words.get(random.nextInt(words.size())), 6);
+		game = new Game(words.get(random.nextInt(words.size())), guesses);
 	}
 
 	@Override
@@ -80,6 +81,27 @@ public class Bot extends ListenerAdapter {
 
 			game.guess(word);
 			event.reply(game.getBoardAsString()).queue();
+
+			if (game.isComplete()) { //send completion message
+				StringBuilder builder = new StringBuilder();
+
+				if (game.getEndState() == Game.EndState.VICTORY) {
+					int remaining = game.getGuessesLeft();
+					builder.append(":tada: Victory with");
+
+					builder.append(switch (remaining) {
+						case 0 -> "no guesses remaining!";
+						case 1 -> "``1`` guess remaining!";
+						default -> "``" + remaining + "`` remaining.";
+					});
+				} else {
+					builder.append(":skull_crossbones: Defeat.");
+				}
+
+				builder.append("\nThe word was **").append(game.getSolution().toUpperCase()).append("**.");
+
+				event.getChannel().sendMessage(builder.toString()).queue();
+			}
 		} else if (event.getName().equals("board")) {
 			event.reply(game.getBoardAsString()).setEphemeral(true).queue();
 		} else if (event.getName().equals("unused")) {
