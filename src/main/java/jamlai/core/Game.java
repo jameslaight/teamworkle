@@ -70,17 +70,17 @@ public class Game {
 		board[guesses++] = builder.toString();
 	}
 
-	@NotNull
-	public String getSolution() {
-		return solution;
-	}
-
 	public int getGuessesLeft() {
 		return maxGuesses - guesses;
 	}
 
 	public boolean isComplete() {
 		return complete;
+	}
+
+	@NotNull
+	public String getSolution() {
+		return solution;
 	}
 
 	public String getBoardAsString() {
