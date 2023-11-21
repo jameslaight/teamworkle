@@ -15,7 +15,7 @@ public class Game {
 	private final int maxGuesses;
 	private final boolean[] usedCharacters;
 	private int guesses = 0;
-	private boolean complete = false;
+	private EndState endState = null;
 
 	private final String[] board;
 
@@ -59,23 +59,25 @@ public class Game {
 			builder.append(LetterEmoji.getEmoji(c, letterType)); //get the appropriate emoji and append to line
 		}
 
-		if (guess.equals(solution)) { //victory
-			complete = true;
-			builder.append(":tada:");
-		} else if (getGuessesLeft() <= 0) { //defeat
-			complete = true;
-			builder.append(":skull_crossbones:");
-		}
-
 		board[guesses++] = builder.toString();
+
+		if (guess.equals(solution)) { //victory
+			endState = EndState.VICTORY;
+		} else if (getGuessesLeft() <= 0) { //defeat
+			endState = EndState.DEFEAT;
+		}
 	}
 
 	public int getGuessesLeft() {
 		return maxGuesses - guesses;
 	}
 
+	public EndState getEndState() {
+		return endState;
+	}
+
 	public boolean isComplete() {
-		return complete;
+		return endState != null;
 	}
 
 	@NotNull
@@ -108,6 +110,10 @@ public class Game {
 		}
 
 		return builder.toString();
+	}
+
+	public enum EndState {
+		VICTORY, DEFEAT
 	}
 
 }
