@@ -55,12 +55,12 @@ public class Bot extends ListenerAdapter {
 
 		if (event.getName().equals("guess")) {
 			if (game.isComplete()) { //fail if the game has been completed
-				event.reply("Today's game is over. View the board state with ``/board``.").queue();
+				event.reply("Today's game is over. View the board state with ``/board``.").setEphemeral(true).queue();
 				return;
 			}
 
 			if (game.hasGuessed(event.getUser())) {
-				event.reply("You have already guessed in today's game. View the board state with ``/board``.").queue();
+				event.reply("You have already guessed in today's game. View the board state with ``/board``.").setEphemeral(true).queue();
 				return;
 			}
 
