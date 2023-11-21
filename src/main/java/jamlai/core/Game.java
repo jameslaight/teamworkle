@@ -1,21 +1,22 @@
 package jamlai.core;
 
 import jamlai.util.LetterEmoji;
+import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Game {
 
 	private final @NotNull String solution;
 	private final @NotNull Map<Character, Integer> characterCounts = new HashMap<>();
+	private EndState endState = null;
 
 	private final int maxGuesses;
-	private final boolean[] usedCharacters;
 	private int guesses = 0;
-	private EndState endState = null;
+	private List<User> guessers = new ArrayList<>();
+
+	private final boolean[] usedCharacters;
 
 	private final String[] board;
 
@@ -34,7 +35,7 @@ public class Game {
 		Arrays.fill(board, line); //fill board with blank lines to begin
 	}
 
-	public void guess(@NotNull String guess) {
+	public void guess(@NotNull String guess, User guesser) {
 		StringBuilder builder = new StringBuilder(); //builder for the line on the board
 
 		Map<Character, Integer> counts = new HashMap<>(characterCounts);
@@ -66,10 +67,8 @@ public class Game {
 		} else if (getGuessesLeft() <= 0) { //defeat
 			endState = EndState.DEFEAT;
 		}
-	}
 
-	public int getGuessesLeft() {
-		return maxGuesses - guesses;
+		guessers.add(guesser);
 	}
 
 	public EndState getEndState() {
@@ -78,6 +77,14 @@ public class Game {
 
 	public boolean isComplete() {
 		return endState != null;
+	}
+
+	public int getGuessesLeft() {
+		return maxGuesses - guesses;
+	}
+
+	public boolean hasGuessed(User user) {
+		return guessers.contains(user);
 	}
 
 	@NotNull

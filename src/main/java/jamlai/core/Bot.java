@@ -21,9 +21,9 @@ import java.util.Random;
 public class Bot extends ListenerAdapter {
 
 	private JDA jda;
-	private Random random = new Random();
+	private final Random random = new Random();
 
-	private Map<Guild, Game> games = new HashMap<>(); //games being played in each guild
+	private final Map<Guild, Game> games = new HashMap<>(); //games being played in each guild
 
 	public void build(@NotNull String token) {
 		JDABuilder builder = JDABuilder.createDefault(token);
@@ -59,6 +59,11 @@ public class Bot extends ListenerAdapter {
 				return;
 			}
 
+			if (game.hasGuessed(event.getUser())) {
+				event.reply("You have already guessed in today's game. View the board state with ``/board``.").queue();
+				return;
+			}
+
 			String word = event.getOption("word", OptionMapping::getAsString);
 
 			if (word == null) {
@@ -77,7 +82,7 @@ public class Bot extends ListenerAdapter {
 				return;
 			}
 
-			game.guess(word);
+			game.guess(word, event.getUser());
 			event.reply(game.getBoardAsString()).queue();
 
 			if (game.isComplete()) { //send completion message
