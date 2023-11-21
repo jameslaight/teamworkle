@@ -63,6 +63,11 @@ public class Game {
 		return guess.equals(solution); //returns whether solved
 	}
 
+	@NotNull
+	public String getSolution() {
+		return solution;
+	}
+
 	public String getBoardAsString() {
 		StringBuilder builder = new StringBuilder();
 
