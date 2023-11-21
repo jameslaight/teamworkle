@@ -18,7 +18,7 @@ public abstract class LetterEmoji {
 	public static void load() {
 		if (loaded) throw new IllegalStateException("Emojis already loaded");
 
-		try (BufferedReader reader = new BufferedReader(new FileReader("emojis.txt"))) {
+		try (BufferedReader reader = new BufferedReader(new FileReader("txt/emojis.txt"))) {
 			blankEmoji = reader.readLine();
 
 			for (Type type : Type.values()) {
