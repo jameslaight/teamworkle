@@ -3,10 +3,13 @@ package jamlai.core;
 import jamlai.util.Dictionary;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -45,7 +48,11 @@ public class Bot extends ListenerAdapter {
 				Commands.slash("board", "View the board state")
 						.setGuildOnly(true),
 				Commands.slash("unused", "See all unused letters.")
+						.setGuildOnly(true),
+				Commands.slash("lock", "Set whether the same user can guess twice on today's teamworkle.")
 						.setGuildOnly(true)
+						.addOption(OptionType.BOOLEAN, "locked", "whether game is locked", true, false)
+						.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MANAGE_SERVER))
 		).queue();
 	}
 
@@ -59,7 +66,7 @@ public class Bot extends ListenerAdapter {
 				return;
 			}
 
-			if (game.hasGuessed(event.getUser())) {
+			if (game.isLocked() && game.hasGuessed(event.getUser())) { //can't guess twice in locked games
 				event.reply("You have already guessed in today's game. View the board state with ``/board``.").setEphemeral(true).queue();
 				return;
 			}
@@ -109,6 +116,26 @@ public class Bot extends ListenerAdapter {
 			event.reply(game.getBoardAsString()).setEphemeral(true).queue();
 		} else if (event.getName().equals("unused")) {
 			event.reply(game.getUnusedAsString()).setEphemeral(true).queue();
+		} else if (event.getName().equals("lock")) {
+			Member member = event.getMember();
+
+			if (member == null) throw new NullPointerException("Member was null"); //should not occur
+
+			if (!member.hasPermission(Permission.MANAGE_SERVER)) { //check perms anyway in case it gets sent
+				event.reply("You don't have permission to do that.").setEphemeral(true).queue();
+				return;
+			}
+
+			Boolean locked = event.getOption("locked", OptionMapping::getAsBoolean);
+
+			if (locked == null) {
+				event.reply("No lock state specified.").setEphemeral(true).queue();
+				return;
+			}
+
+			game.setLocked(locked);
+
+			event.reply("Set game lock state to ``" + locked + "``.").setEphemeral(true).queue();
 		}
 	}
 

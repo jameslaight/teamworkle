@@ -14,7 +14,8 @@ public class Game {
 
 	private final int maxGuesses;
 	private int guesses = 0;
-	private List<User> guessers = new ArrayList<>();
+	private final List<User> guessers = new ArrayList<>();
+	private boolean locked = true; //same user can't guess multiple times if true
 
 	private final boolean[] usedCharacters;
 
@@ -85,6 +86,14 @@ public class Game {
 
 	public boolean hasGuessed(User user) {
 		return guessers.contains(user);
+	}
+
+	public boolean isLocked() {
+		return locked;
+	}
+
+	public void setLocked(boolean locked) {
+		this.locked = locked;
 	}
 
 	@NotNull
