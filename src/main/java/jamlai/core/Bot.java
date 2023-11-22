@@ -49,6 +49,9 @@ public class Bot extends ListenerAdapter {
 						.setGuildOnly(true),
 				Commands.slash("unused", "See all unused letters.")
 						.setGuildOnly(true),
+				Commands.slash("new", "Start a new game.")
+						.setGuildOnly(true)
+						.setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MANAGE_SERVER)),
 				Commands.slash("lock", "Set whether the same user can guess twice on today's teamworkle.")
 						.setGuildOnly(true)
 						.addOption(OptionType.BOOLEAN, "locked", "whether game is locked", true, false)
@@ -116,6 +119,19 @@ public class Bot extends ListenerAdapter {
 			event.reply(game.getBoardAsString()).setEphemeral(true).queue();
 		} else if (event.getName().equals("unused")) {
 			event.reply(game.getUnusedAsString()).setEphemeral(true).queue();
+		} else if (event.getName().equals("new")) {
+			Member member = event.getMember();
+
+			if (member == null) throw new NullPointerException("Member was null"); //should not occur
+
+			if (!member.hasPermission(Permission.MANAGE_SERVER)) { //check perms anyway in case it gets sent
+				event.reply("You don't have permission to do that.").setEphemeral(true).queue();
+				return;
+			}
+
+			createGameForGuild(event.getGuild());
+
+			event.reply("Created new game.").setEphemeral(true).queue();
 		} else if (event.getName().equals("lock")) {
 			Member member = event.getMember();
 
@@ -143,15 +159,19 @@ public class Bot extends ListenerAdapter {
 		if (games.containsKey(guild)) {
 			return games.get(guild);
 		} else {
-			final int wordLength = 5, guesses = 6;
-			List<String> words = Dictionary.getSolutionWords().stream().filter(s -> s.length() == wordLength).toList();
-			String solution = words.get(random.nextInt(words.size()));
-
-			Game game = new Game(solution, guesses);
-			games.put(guild, game);
-
-			return game;
+			return createGameForGuild(guild);
 		}
+	}
+
+	private Game createGameForGuild(Guild guild) {
+		final int wordLength = 5, guesses = 6;
+		List<String> words = Dictionary.getSolutionWords().stream().filter(s -> s.length() == wordLength).toList();
+		String solution = words.get(random.nextInt(words.size()));
+
+		Game game = new Game(solution, guesses);
+		games.put(guild, game);
+
+		return game;
 	}
 
 }
