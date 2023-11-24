@@ -41,24 +41,33 @@ public class Game {
 
 		Map<Character, Integer> counts = new HashMap<>(characterCounts);
 
+		LetterEmoji.Type[] types = new LetterEmoji.Type[solution.length()];
+		Arrays.fill(types, LetterEmoji.Type.INCORRECT);
+		for (LetterEmoji.Type type : new LetterEmoji.Type[] {LetterEmoji.Type.SOLVED, LetterEmoji.Type.MISPLACED}) {
+			for (int i = 0; i < solution.length(); i++) {
+				if (types[i] != LetterEmoji.Type.INCORRECT) continue;
+
+				char c = guess.charAt(i);
+
+				boolean add = switch (type) {
+					case SOLVED -> solution.charAt(i) == c;
+					case MISPLACED -> counts.getOrDefault(c, 0) > 0;
+					default -> true;
+				};
+
+				if (!add) continue;
+
+				types[i] = type;
+				counts.put(c, counts.getOrDefault(c, 0) - 1);
+			}
+		}
+
 		for (int i = 0; i < solution.length(); i++) {
-			char c = guess.charAt(i);
+			char c = guess.charAt((i));
+
+			builder.append(LetterEmoji.getEmoji(c, types[i]));
 
 			usedCharacters[c - 'a'] = true; //set character to used
-
-			LetterEmoji.Type letterType = LetterEmoji.Type.INCORRECT; //assume letter is incorrect
-			int count = counts.getOrDefault(c, 0);
-			if (count > 0) { //if the character is in the solution's character counts
-				if (solution.charAt(i) == c) { //if character is an exact match, it is solved
-					letterType = LetterEmoji.Type.SOLVED;
-				} else { //otherwise, it is misplaced
-					letterType = LetterEmoji.Type.MISPLACED;
-				}
-
-				counts.put(c, --count); //character count is decremented to display correct number of misplaced letters
-			}
-
-			builder.append(LetterEmoji.getEmoji(c, letterType)); //get the appropriate emoji and append to line
 		}
 
 		board[guesses++] = builder.toString();
